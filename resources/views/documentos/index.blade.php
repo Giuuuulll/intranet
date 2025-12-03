@@ -27,9 +27,12 @@
                     <button class="btn btn-primary w-100">Buscar</button>
                 </div>
 
+                {{-- SOLO RRHH, TI Y AUDITORÍA PUEDEN SUBIR --}}
+                @if(auth()->user()->rol !== 'usuario')
                 <div class="col-md-3">
                     <a href="{{ route('upload') }}" class="btn btn-success w-100">Subir archivo</a>
                 </div>
+                @endif
             </form>
 
         </div>
@@ -59,12 +62,15 @@
                         <td>{{ $doc->categoria }}</td>
                         <td>{{ strtoupper($doc->extension) }}</td>
                         <td>{{ $doc->created_at->format('d/m/Y') }}</td>
-                        <td>
 
+                        <td>
+                            {{-- Descargar SIEMPRE --}}
                             <a href="{{ route('documentos.descargar', $doc->id) }}" class="btn btn-sm btn-primary">
                                 Descargar
                             </a>
 
+                            {{-- SOLO RRHH, TI Y AUDITORÍA PUEDEN ELIMINAR --}}
+                            @if(auth()->user()->rol !== 'usuario')
                             <form action="{{ route('documentos.eliminar', $doc->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
@@ -72,6 +78,7 @@
                                     Eliminar
                                 </button>
                             </form>
+                            @endif
 
                         </td>
                     </tr>
