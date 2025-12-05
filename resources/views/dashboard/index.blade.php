@@ -18,32 +18,64 @@
     <!-- CONTENIDO CENTRAL -->
     <main class="contenido">
 
-        <!-- SLIDER AUTOMÁTICO (TU SLIDE LINDO) -->
-        <div class="slider-box">
-            <h2 class="titulo">Noticias destacadas</h2>
-
-            <div id="slider" class="slider">
-
-                @foreach ($ultimasNoticias as $index => $n)
-                    <div class="slide {{ $index == 0 ? 'active' : '' }}">
-                        <img src="{{ asset('storage/noticias/'.$n->imagen) }}" alt="">
-                    </div>
-                @endforeach
-
+        <!-- SLIDER NOTICIAS (ocupando el espacio extendido) -->
+        @php
+            $tieneNoticias = isset($ultimasNoticias) && count($ultimasNoticias) > 0;
+        @endphp
+        <div class="card shadow-sm mb-4 slide-card">
+            <div class="card-header titulo-slide">
+                <i class="fas fa-newspaper"></i> Noticias destacadas
             </div>
 
-            <div class="dots">
-                @foreach ($ultimasNoticias as $index => $n)
-                    <span class="dot {{ $index == 0 ? 'active-dot' : '' }}"></span>
-                @endforeach
+            <div class="card-body p-0">
+                <div id="carouselNoticias" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @if ($tieneNoticias)
+                            @foreach ($ultimasNoticias as $index => $n)
+                            <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                                <img
+                                    src="{{ $n->imagen ? asset('storage/noticias/'.$n->imagen) : 'https://picsum.photos/1600/900' }}"
+                                    class="d-block w-100 slide-img"
+                                    alt="{{ $n->titulo }}"
+                                >
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-2 rounded" style="bottom: 10px;">
+                                    <h5>{{ $n->titulo }}</h5>
+                                    <p>{{ Str::limit($n->contenido, 100) }}</p>
+                                </div>
+                            </div>
+                            @endforeach
+                        @else
+                            @php
+                                $fallback = [
+                                    ['titulo' => 'Bienvenido a la intranet', 'img' => 'https://picsum.photos/seed/intra1/1600/900'],
+                                    ['titulo' => 'Comparte tus noticias', 'img' => 'https://picsum.photos/seed/intra2/1600/900'],
+                                    ['titulo' => 'Comunicación interna', 'img' => 'https://picsum.photos/seed/intra3/1600/900'],
+                                ];
+                            @endphp
+                            @foreach ($fallback as $index => $item)
+                            <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                                <img src="{{ $item['img'] }}" class="d-block w-100 slide-img" alt="{{ $item['titulo'] }}">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-2 rounded" style="bottom: 10px;">
+                                    <h5>{{ $item['titulo'] }}</h5>
+                                    <p>Agrega tus primeras noticias para mostrarlas aquí.</p>
+                                </div>
+                            </div>
+                            @endforeach
+                        @endif
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselNoticias" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselNoticias" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
             </div>
         </div>
 
-
         <!-- INFORMACIÓN ÚTIL -->
         <div class="info-util">
-            <h2>Información Útil</h2>
-
+            <h2>Información útil</h2>
             <div class="info-grid">
                 <div class="info-card">Cotización de moneda</div>
                 <div class="info-card">Números de teléfono</div>
@@ -53,22 +85,18 @@
 
     </main>
 
-    <!-- CUMPLEAÑOS A LA DERECHA -->
+    <!-- PANEL DERECHA: CUMPLEAÑOS -->
     <aside class="cumple-box">
-
         <h3>Cumpleaños del mes</h3>
 
         <div class="mini-calendario">
-
             @php
                 use Carbon\Carbon;
-
                 $hoy = Carbon::now();
                 $primerDia = $hoy->copy()->startOfMonth();
                 $ultimoDia = $hoy->copy()->endOfMonth();
                 $inicioSemana = $primerDia->dayOfWeekIso;
                 $totalDias = $ultimoDia->day;
-
                 $diasConCumple = $cumpleMes
                     ->map(fn($c) => Carbon::parse($c->fecha_nacimiento)->day)
                     ->unique()
@@ -78,62 +106,31 @@
             <table>
                 <thead>
                     <tr>
-                        <th>D</th><th>L</th><th>M</th><th>X</th>
-                        <th>J</th><th>V</th><th>S</th>
+                        <th>D</th><th>L</th><th>M</th><th>X</th><th>J</th><th>V</th><th>S</th>
                     </tr>
                 </thead>
-
                 <tbody>
-                <tr>
+                    <tr>
                     @php $col = 1; @endphp
-
                     @for ($i = 1; $i < $inicioSemana; $i++)
                         <td></td>
                         @php $col++; @endphp
                     @endfor
-
                     @for ($dia = 1; $dia <= $totalDias; $dia++)
                         <td class="{{ in_array($dia, $diasConCumple) ? 'cumple' : '' }}">
                             {{ $dia }}
                         </td>
-
                         @if ($col % 7 == 0)
                             </tr><tr>
                         @endif
-
                         @php $col++; @endphp
                     @endfor
-                </tr>
+                    </tr>
                 </tbody>
             </table>
-
         </div>
-
     </aside>
 
 </div>
 
-@endsection
-
-
-{{-- SCRIPTS DEL SLIDE AUTOMÁTICO --}}
-@section('scripts')
-<script>
-    let currentSlide = 0;
-    const slides = document.querySelectorAll(".slide");
-    const dots = document.querySelectorAll(".dot");
-
-    function showSlide(index) {
-        slides.forEach(s => s.classList.remove("active"));
-        dots.forEach(d => d.classList.remove("active-dot"));
-
-        slides[index].classList.add("active");
-        dots[index].classList.add("active-dot");
-    }
-
-    setInterval(() => {
-        currentSlide = (currentSlide + 1) % slides.length;
-        showSlide(currentSlide);
-    }, 3000);
-</script>
 @endsection

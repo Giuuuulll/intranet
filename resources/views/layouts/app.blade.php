@@ -24,21 +24,19 @@
     <!-- ⭐ BARRA SUPERIOR (HEADER) ⭐ -->
     <header class="topbar">
         <div class="topbar-left">
-            <h1 class="logo-text">Intranet Garden 🌱</h1>
+            <h1 class="logo-text">Intranet Garden</h1>
         </div>
 
         <div class="topbar-center">
-            <input type="text" class="search-box" placeholder="Buscar…">
+            <form action="{{ route('buscar') }}" method="GET" class="topbar-search">
+                <input type="text" name="q" class="search-box" placeholder="Buscar…" value="{{ request('q') }}">
+            </form>
         </div>
 
         <div class="topbar-right">
 
-            <a href="#" class="topbar-link">
+            <a href="{{ route('personas') }}" class="topbar-link">
                 <i class="fas fa-users"></i> Personas
-            </a>
-
-            <a href="#" class="topbar-link">
-                <i class="fas fa-folder-open"></i> Archivos
             </a>
 
             <!-- 🔥 DROPDOWN DEL USUARIO (AQUÍ SÍ O SÍ) -->

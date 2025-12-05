@@ -1,27 +1,29 @@
 <?php
 
-namespace App\Http\Controllers;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Noticia;
-use App\Models\Document;
-use App\Models\Empleado;
-
-class SearchController extends Controller
+return new class extends Migration
 {
-    public function search(Request $request)
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
-        $q = $request->input('q');
-
-        $usuarios = User::where('name', 'like', "%$q%")
-                        ->orWhere('rol', 'like', "%$q%")
-                        ->get();
-
-        $documentos = Document::where('titulo', 'like', "%$q%")->get();
-        $noticias   = Noticia::where('titulo', 'like', "%$q%")->get();
-        $empleados  = Empleado::where('nombre', 'like', "%$q%")->get();
-
-        return view('search.results', compact('q', 'usuarios', 'documentos', 'noticias', 'empleados'));
+        Schema::table('users', function (Blueprint $table) {
+            // Rol del usuario para permisos básicos dentro de la intranet
+            $table->string('rol')->default('usuario')->after('email');
+        });
     }
-}
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('rol');
+        });
+    }
+};

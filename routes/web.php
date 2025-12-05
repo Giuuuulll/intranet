@@ -11,6 +11,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SearchController;
 use App\Models\Noticia;
 use App\Models\Empleado;
+use App\Models\User;
 
 /* ============================
    LOGIN / LOGOUT
@@ -35,6 +36,14 @@ Route::middleware('auth')->group(function () {
         $cumpleMes = Empleado::whereMonth('fecha_nacimiento', now()->month)->get();
         return view('dashboard.index', compact('ultimasNoticias', 'cumpleMes'));
     })->name('dashboard');
+
+    /* =======================
+       PERSONAS (LISTADO USUARIOS)
+    ======================= */
+    Route::get('/personas', function () {
+        $usuarios = User::orderBy('name')->get();
+        return view('personas.index', compact('usuarios'));
+    })->name('personas');
 
 
     /* =======================
