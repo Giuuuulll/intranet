@@ -136,4 +136,10 @@ Route::middleware('auth')->group(function () {
        EVENTOS
     ======================= */
     Route::view('/eventos', 'eventos.index')->name('eventos');
+
+    /* =======================
+       INFO ÚTIL
+    ======================= */
+    Route::view('/info/cotizacion', 'info.cotizacion')->name('info.cotizacion');
+    Route::view('/info/telefonos', 'info.telefonos')->name('info.telefonos');
 });

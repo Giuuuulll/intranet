@@ -77,9 +77,9 @@
         <div class="info-util">
             <h2>Información útil</h2>
             <div class="info-grid">
-                <div class="info-card">Cotización de moneda</div>
-                <div class="info-card">Números de teléfono</div>
-                <div class="info-card">Eventos</div>
+                <a class="info-card" href="{{ route('info.cotizacion') }}">Cotización de moneda</a>
+                <a class="info-card" href="{{ route('info.telefonos') }}">Números de teléfono</a>
+                <a class="info-card" href="{{ route('eventos') }}">Eventos</a>
             </div>
         </div>
 
